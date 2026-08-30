@@ -13,7 +13,7 @@
         "changelog": "Initial release with compact horizontal layout, TV Show support, and floating bulk tag updates toolbar.",
         "targetAbi": "10.11.0.0",
         "sourceUrl": "https://github.com/samz3/JellyTag/raw/main/JellyTag.zip",
-        "checksum": "5C363BC283B78A8CAE6E502A79AEA6ED99079DF0ABE4F0E1CC28B86161712FDF"
+        "checksum": "88DFF1AAB96A3EB6FE1F3B2C2722D840CDC6885DCF8B6AF0B3C8FD4A81897D8A"
       }
     ]
   }
