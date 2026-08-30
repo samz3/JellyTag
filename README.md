@@ -10,7 +10,19 @@ JellyTag is an administrative plugin for Jellyfin that allows you to manage meta
 - **Secured API:** Implements administrative-only routing via ASP.NET Core policies, preventing unauthorized metadata changes.
 - **Responsive Theme:** A custom dark-mode design integrated into the native Jellyfin dashboard with a clean visual grid and smooth micro-animations.
 
+## Screenshots
+
+### Compact Dashboard Filters & Tag Operations
+![Dashboard Filters](./screenshots/screenshot1.png)
+
+### TV Show & Series Library Query Support
+![TV Shows Support](./screenshots/screenshot2.png)
+
+### Floating Glassmorphic Bulk Action Toolbar
+![Floating Bulk Toolbar](./screenshots/screenshot3.png)
+
 ---
+
 
 ## Compatibility
 
@@ -95,3 +107,11 @@ Create a public JSON file named `manifest.json` on GitHub Pages or in a public r
    - **Name:** JellyTag Repository
    - **URL:** The raw URL to your `manifest.json` file (e.g. `https://raw.githubusercontent.com/samz3/JellyTag/main/manifest.json`).
 4. Select the **Catalog** tab. The **JellyTag** plugin will now appear in your catalog, allowing users to install it with a single click.
+
+---
+
+## Logo & Branding
+
+<p align="center">
+  <img src="./thumb.png" alt="JellyTag Logo" width="220" />
+</p>
