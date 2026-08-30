@@ -1,0 +1,911 @@
+<div id="JellyTagPage" data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-input,emby-button,emby-select,emby-checkbox">
+    <style>
+        .jellytag-container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
+            color: #f0f0f0;
+        }
+        .jellytag-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 16px;
+        }
+        .jellytag-title-area h2 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ab47bc, #7b1fa2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .jellytag-title-area p {
+            margin: 4px 0 0;
+            color: #aaaaaa;
+            font-size: 14px;
+        }
+        .jellytag-filters-card {
+            background: rgba(30, 30, 30, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 10px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(10px);
+        }
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            color: #b0bec5;
+        }
+        .jellytag-input, .jellytag-select {
+            background: rgba(0, 0, 0, 0.3) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            border-radius: 6px !important;
+            color: #ffffff !important;
+            padding: 8px 12px !important;
+            font-size: 14px !important;
+            outline: none !important;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-sizing: border-box;
+            width: 100%;
+        }
+        .jellytag-input:focus, .jellytag-select:focus {
+            border-color: #ab47bc !important;
+            box-shadow: 0 0 0 3px rgba(171, 71, 188, 0.2) !important;
+        }
+        .jellytag-bulk-panel {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(150px);
+            z-index: 9999;
+            background: rgba(20, 20, 20, 0.9);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(171, 71, 188, 0.5);
+            border-radius: 14px;
+            padding: 12px 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
+            width: max-content;
+            max-width: 90vw;
+        }
+        .jellytag-bulk-panel.active {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .table-controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            background: rgba(30, 30, 30, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 12px 16px;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .bulk-title {
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #e1bee7;
+        }
+        .bulk-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) auto;
+            gap: 16px;
+            align-items: end;
+        }
+        .jellytag-btn {
+            background: linear-gradient(135deg, #ab47bc, #7b1fa2) !important;
+            color: #ffffff !important;
+            border: none !important;
+            border-radius: 6px !important;
+            padding: 10px 20px !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            transition: transform 0.1s, opacity 0.2s;
+            text-shadow: none !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+        }
+        .jellytag-btn:hover {
+            opacity: 0.9 !important;
+        }
+        .jellytag-btn:active {
+            transform: scale(0.98);
+        }
+        .jellytag-btn-secondary {
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 6px !important;
+            padding: 8px 16px !important;
+            cursor: pointer !important;
+        }
+        .jellytag-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15) !important;
+        }
+        .movie-table-container {
+            background: rgba(30, 30, 30, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+        .movie-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+        .movie-table th {
+            background: rgba(15, 15, 15, 0.8);
+            padding: 14px 16px;
+            font-weight: 600;
+            color: #b0bec5;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .movie-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            vertical-align: middle;
+        }
+        .movie-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .movie-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: #ffffff;
+        }
+        .movie-name-link {
+            text-decoration: none;
+            display: inline-block;
+        }
+        .movie-name-link:hover .movie-name {
+            color: #e1bee7;
+            text-decoration: underline;
+        }
+        .movie-year {
+            font-weight: normal;
+            color: #888888;
+            margin-left: 6px;
+        }
+        .movie-path {
+            font-size: 11px;
+            color: #777777;
+            margin-top: 4px;
+            word-break: break-all;
+        }
+        .tag-badge {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(171, 71, 188, 0.15);
+            color: #e1bee7;
+            border: 1px solid rgba(171, 71, 188, 0.3);
+            border-radius: 16px;
+            padding: 2px 8px;
+            margin: 2px 4px 2px 0;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .tag-remove-btn {
+            background: none;
+            border: none;
+            color: #e1bee7;
+            margin-left: 6px;
+            cursor: pointer;
+            padding: 0;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            opacity: 0.7;
+        }
+        .tag-remove-btn:hover {
+            opacity: 1;
+            color: #ffffff;
+        }
+        .tag-editor-cell {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+        }
+        .inline-add-container {
+            display: inline-flex;
+            align-items: center;
+            position: relative;
+        }
+        .inline-add-input {
+            width: 90px !important;
+            padding: 2px 20px 2px 6px !important;
+            font-size: 12px !important;
+            border-radius: 12px !important;
+            background: rgba(0, 0, 0, 0.4) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            color: #ffffff !important;
+            height: 22px !important;
+        }
+        .inline-add-input:focus {
+            border-color: #ab47bc !important;
+            width: 130px !important;
+        }
+        .inline-add-btn {
+            position: absolute;
+            right: 4px;
+            background: none;
+            border: none;
+            color: #ab47bc;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+        .checkbox-cell {
+            width: 30px;
+            text-align: center;
+        }
+        .table-checkbox {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            accent-color: #ab47bc;
+        }
+        .jellytag-loading {
+            text-align: center;
+            padding: 40px;
+            color: #aaaaaa;
+            font-size: 16px;
+        }
+        .jellytag-loading-spinner {
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top: 3px solid #ab47bc;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 12px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .no-movies-placeholder {
+            padding: 40px;
+            text-align: center;
+            color: #777777;
+            font-size: 16px;
+        }
+    </style>
+
+    <div class="jellytag-container">
+        <div class="jellytag-header">
+            <div class="jellytag-title-area">
+                <h2>JellyTag Manager</h2>
+                <p>Manage, filter, edit, and bulk update tags across your movies and series libraries</p>
+            </div>
+            <div>
+                <button type="button" class="jellytag-btn" id="btnRefreshList">Refresh Library</button>
+            </div>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="jellytag-filters-card">
+            <div class="filter-group">
+                <select id="selectLibrary" class="jellytag-select" style="width: 160px !important;">
+                    <option value="">All Libraries</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <input type="text" id="inputSearch" class="jellytag-input" placeholder="Search Media..." style="width: 200px !important;" />
+            </div>
+            <div class="filter-group">
+                <input type="text" id="inputTagFilter" class="jellytag-input" placeholder="Filter by Tag..." style="width: 160px !important;" />
+            </div>
+            <div>
+                <button type="button" class="jellytag-btn jellytag-btn-secondary" id="btnClearFilters">Clear</button>
+            </div>
+            
+            <div style="display: flex; gap: 16px; align-items: center; margin-left: auto;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #b0bec5; user-select: none; margin: 0;">
+                    <input type="checkbox" id="chkDisplayThumbnails" class="table-checkbox" /> Display Thumbnails
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #b0bec5; user-select: none; margin: 0;">
+                    <input type="checkbox" id="chkDisplayLogos" class="table-checkbox" /> Display Logos
+                </label>
+            </div>
+        </div>
+
+        <!-- Controls Bar -->
+        <div class="table-controls-bar">
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <button type="button" class="jellytag-btn jellytag-btn-secondary" id="btnSelectAll" style="padding: 6px 12px !important; font-size: 13px !important; margin: 0 !important; box-shadow: none !important;">Select All</button>
+                <button type="button" class="jellytag-btn jellytag-btn-secondary" id="btnDeselectAll" style="padding: 6px 12px !important; font-size: 13px !important; margin: 0 !important; box-shadow: none !important;">Deselect All</button>
+                <span id="selectionSummary" style="font-size: 13px; color: #aaaaaa; margin-left: 8px;">0 items selected</span>
+            </div>
+        </div>
+
+        <!-- Movies List Container -->
+        <div class="movie-table-container">
+            <div id="loadingIndicator" class="jellytag-loading">
+                <div class="jellytag-loading-spinner"></div>
+                Loading media database...
+            </div>
+            
+            <div id="noMoviesArea" class="no-movies-placeholder" style="display: none;">
+                No items found matching your filters.
+            </div>
+
+            <table class="movie-table" id="movieTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th class="checkbox-cell"><input type="checkbox" id="selectAllCheckbox" class="table-checkbox" /></th>
+                        <th>Title</th>
+                        <th>Metadata Tags</th>
+                    </tr>
+                </thead>
+                <tbody id="movieTableBody">
+                    <!-- Loaded dynamically -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Floating Bulk Action Toolbar -->
+        <div class="jellytag-bulk-panel" id="bulkPanel">
+            <div style="font-weight: 600; font-size: 14px; color: #e1bee7; border-right: 1px solid rgba(255,255,255,0.15); padding-right: 16px; white-space: nowrap;">
+                <span id="selectedCount">0</span> Selected
+            </div>
+            <div class="bulk-form">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: #b0bec5;">Action</span>
+                    <select id="bulkActionType" class="jellytag-select" style="width: 120px !important;">
+                        <option value="Add">Add Tags</option>
+                        <option value="Remove">Remove Tags</option>
+                        <option value="Set">Set Tags</option>
+                    </select>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; width: 280px;">
+                    <span style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: #b0bec5; white-space: nowrap;">Tags</span>
+                    <input type="text" id="inputBulkTags" class="jellytag-input" placeholder="e.g. Action, Marvel" />
+                </div>
+                <div style="display: flex; gap: 8px; margin-left: 8px;">
+                    <button type="button" class="jellytag-btn" id="btnApplyBulk">Apply</button>
+                    <button type="button" class="jellytag-btn jellytag-btn-secondary" id="btnCancelBulk" style="padding: 10px 14px !important;">Clear</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Global Hover Preview Container -->
+        <div id="jellytag-hover-preview" style="display: none; position: absolute; z-index: 10000; pointer-events: none; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); background: rgba(20, 20, 20, 0.95); padding: 4px; width: 140px; transition: opacity 0.15s ease;">
+            <img id="jellytag-preview-img" src="" style="width: 100%; border-radius: 6px; display: block; object-fit: cover;" />
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        (function () {
+            var currentPage = null;
+            var loadedMovies = [];
+
+            function initPage(page) {
+                currentPage = page;
+                
+                // Bind events
+                page.querySelector('#selectLibrary').addEventListener('change', loadMovies);
+                
+                // Debounce inputs
+                var debounceTimer;
+                function debouncedSearch() {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(loadMovies, 300);
+                }
+                page.querySelector('#inputSearch').addEventListener('input', debouncedSearch);
+                page.querySelector('#inputTagFilter').addEventListener('input', debouncedSearch);
+                
+                page.querySelector('#btnClearFilters').addEventListener('click', function () {
+                    page.querySelector('#selectLibrary').value = '';
+                    page.querySelector('#inputSearch').value = '';
+                    page.querySelector('#inputTagFilter').value = '';
+                    loadMovies();
+                });
+
+                page.querySelector('#btnRefreshList').addEventListener('click', loadMovies);
+                
+                page.querySelector('#selectAllCheckbox').addEventListener('change', function (e) {
+                    var checkboxes = page.querySelectorAll('.movie-checkbox');
+                    checkboxes.forEach(function (cb) {
+                        cb.checked = e.target.checked;
+                    });
+                    updateBulkPanelState();
+                });
+
+                page.querySelector('#btnSelectAll').addEventListener('click', function () {
+                    var checkboxes = page.querySelectorAll('.movie-checkbox');
+                    checkboxes.forEach(function (cb) {
+                        cb.checked = true;
+                    });
+                    page.querySelector('#selectAllCheckbox').checked = true;
+                    updateBulkPanelState();
+                });
+
+                page.querySelector('#btnDeselectAll').addEventListener('click', function () {
+                    clearBulkSelections();
+                });
+
+                page.querySelector('#btnCancelBulk').addEventListener('click', function () {
+                    clearBulkSelections();
+                });
+
+                page.querySelector('#btnApplyBulk').addEventListener('click', applyBulkAction);
+
+                page.querySelector('#chkDisplayThumbnails').addEventListener('change', function (e) {
+                    if (e.target.checked) {
+                        page.querySelector('#chkDisplayLogos').checked = false;
+                    }
+                    renderMovieTable(loadedMovies);
+                });
+
+                page.querySelector('#chkDisplayLogos').addEventListener('change', function (e) {
+                    if (e.target.checked) {
+                        page.querySelector('#chkDisplayThumbnails').checked = false;
+                    }
+                    renderMovieTable(loadedMovies);
+                });
+
+                // Initial loads
+                loadLibraries();
+                loadMovies();
+            }
+
+            function getErrorMessage(err) {
+                if (!err) return 'Unknown error';
+                if (typeof err === 'string') return err;
+                if (err.message) return err.message;
+                if (err.status) {
+                    var msg = err.status + ' ' + (err.statusText || '');
+                    if (err.responseText) {
+                        msg += ': ' + err.responseText;
+                    }
+                    return msg;
+                }
+                return JSON.stringify(err);
+            }
+
+            function loadLibraries() {
+                var url = ApiClient.getUrl('JellyTag/Libraries');
+                ApiClient.getJSON(url).then(function (libraries) {
+                    var select = currentPage.querySelector('#selectLibrary');
+                    // Keep the first default option
+                    select.innerHTML = '<option value="">All Libraries</option>';
+                    libraries.forEach(function (lib) {
+                        var opt = document.createElement('option');
+                        opt.value = lib.Id;
+                        opt.textContent = lib.Name;
+                        select.appendChild(opt);
+                    });
+                }).catch(function (err) {
+                    var errMsg = getErrorMessage(err);
+                    console.error('[JellyTag] Error loading libraries (URL: ' + url + '):', err);
+                    alert('Error loading libraries (URL: ' + url + '): ' + errMsg);
+                });
+            }
+
+            function loadMovies() {
+                var page = currentPage;
+                var table = page.querySelector('#movieTable');
+                var loading = page.querySelector('#loadingIndicator');
+                var placeholder = page.querySelector('#noMoviesArea');
+                
+                table.style.display = 'none';
+                placeholder.style.display = 'none';
+                loading.style.display = 'block';
+                page.querySelector('#selectAllCheckbox').checked = false;
+                updateBulkPanelState();
+
+                var libraryId = page.querySelector('#selectLibrary').value;
+                var searchTerm = page.querySelector('#inputSearch').value;
+                var tagFilter = page.querySelector('#inputTagFilter').value;
+
+                var queryParams = [];
+                if (libraryId) queryParams.push('libraryId=' + libraryId);
+                if (searchTerm) queryParams.push('searchTerm=' + encodeURIComponent(searchTerm));
+                if (tagFilter) queryParams.push('tagFilter=' + encodeURIComponent(tagFilter));
+                
+                var queryString = queryParams.length > 0 ? '?' + queryParams.join('&') : '';
+                var url = ApiClient.getUrl('JellyTag/Movies' + queryString);
+
+                ApiClient.getJSON(url).then(function (movies) {
+                    loadedMovies = movies;
+                    loading.style.display = 'none';
+
+                    if (movies.length === 0) {
+                        placeholder.style.display = 'block';
+                        return;
+                    }
+
+                    renderMovieTable(movies);
+                    table.style.display = 'table';
+                }).catch(function (err) {
+                    loading.style.display = 'none';
+                    var errMsg = getErrorMessage(err);
+                    placeholder.textContent = 'Error loading movies list (URL: ' + url + '): ' + errMsg;
+                    placeholder.style.display = 'block';
+                    console.error('[JellyTag] Error loading movies:', err);
+                });
+            }
+
+            function renderMovieTable(movies) {
+                var tbody = currentPage.querySelector('#movieTableBody');
+                tbody.innerHTML = '';
+
+                movies.forEach(function (movie) {
+                    var tr = document.createElement('tr');
+                    tr.setAttribute('data-id', movie.Id);
+
+                    // Checkbox cell
+                    var tdCb = document.createElement('td');
+                    tdCb.className = 'checkbox-cell';
+                    var cb = document.createElement('input');
+                    cb.type = 'checkbox';
+                    cb.className = 'table-checkbox movie-checkbox';
+                    cb.setAttribute('data-id', movie.Id);
+                    cb.addEventListener('change', updateBulkPanelState);
+                    tdCb.appendChild(cb);
+                    tr.appendChild(tdCb);
+
+                    // Name / Path cell
+                    var tdName = document.createElement('td');
+                    
+                    var flexContainer = document.createElement('div');
+                    flexContainer.style.display = 'flex';
+                    flexContainer.style.gap = '16px';
+                    flexContainer.style.alignItems = 'center';
+                    
+                    var showThumbs = currentPage.querySelector('#chkDisplayThumbnails').checked;
+                    var showLogos = currentPage.querySelector('#chkDisplayLogos').checked;
+                    
+                    if (showThumbs) {
+                        var img = document.createElement('img');
+                        img.loading = 'lazy';
+                        img.src = ApiClient.getUrl('Items/' + movie.Id + '/Images/Primary', { maxWidth: 100 });
+                        img.style.width = '60px';
+                        img.style.height = '90px';
+                        img.style.objectFit = 'cover';
+                        img.style.borderRadius = '4px';
+                        img.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+                        img.style.background = 'rgba(0,0,0,0.3)';
+                        img.onerror = function() { this.style.display = 'none'; };
+                        flexContainer.appendChild(img);
+                    } else if (showLogos) {
+                        var img = document.createElement('img');
+                        img.loading = 'lazy';
+                        img.src = ApiClient.getUrl('Items/' + movie.Id + '/Images/Logo', { maxWidth: 150 });
+                        img.style.width = '120px';
+                        img.style.height = '50px';
+                        img.style.objectFit = 'contain';
+                        img.style.borderRadius = '4px';
+                        img.onerror = function() { this.style.display = 'none'; };
+                        flexContainer.appendChild(img);
+                    }
+                    
+                    var textContainer = document.createElement('div');
+                    
+                    var link = document.createElement('a');
+                    link.href = '#/details?id=' + movie.Id;
+                    link.target = '_blank';
+                    link.className = 'movie-name-link';
+                    
+                    var titleSpan = document.createElement('span');
+                    titleSpan.className = 'movie-name';
+                    titleSpan.textContent = movie.Name;
+                    link.appendChild(titleSpan);
+                    
+                    // Tooltip hover binding
+                    link.addEventListener('mouseenter', function(e) {
+                        showHoverPreview(movie.Id, e);
+                    });
+                    link.addEventListener('mousemove', function(e) {
+                        positionHoverPreview(e);
+                    });
+                    link.addEventListener('mouseleave', function() {
+                        hideHoverPreview();
+                    });
+                    
+                    textContainer.appendChild(link);
+
+                    if (movie.Year) {
+                        var yearSpan = document.createElement('span');
+                        yearSpan.className = 'movie-year';
+                        yearSpan.textContent = '(' + movie.Year + ')';
+                        textContainer.appendChild(yearSpan);
+                    }
+
+                    var pathDiv = document.createElement('div');
+                    pathDiv.className = 'movie-path';
+                    pathDiv.textContent = movie.Path;
+                    textContainer.appendChild(pathDiv);
+                    
+                    flexContainer.appendChild(textContainer);
+                    tdName.appendChild(flexContainer);
+                    tr.appendChild(tdName);
+
+                    // Tags cell
+                    var tdTags = document.createElement('td');
+                    var tagsWrapper = document.createElement('div');
+                    tagsWrapper.className = 'tag-editor-cell';
+                    tagsWrapper.id = 'tags-wrapper-' + movie.Id;
+
+                    renderTags(tagsWrapper, movie.Id, movie.Tags);
+                    tdTags.appendChild(tagsWrapper);
+                    tr.appendChild(tdTags);
+
+                    tbody.appendChild(tr);
+                });
+            }
+
+            function renderTags(container, movieId, tags) {
+                container.innerHTML = '';
+                
+                // Render tag badges
+                if (tags && tags.length > 0) {
+                    tags.forEach(function (tag) {
+                        var badge = document.createElement('span');
+                        badge.className = 'tag-badge';
+                        badge.textContent = tag;
+
+                        var removeBtn = document.createElement('button');
+                        removeBtn.className = 'tag-remove-btn';
+                        removeBtn.innerHTML = '&#x2715;'; // X character
+                        removeBtn.addEventListener('click', function () {
+                            removeIndividualTag(movieId, tag);
+                        });
+
+                        badge.appendChild(removeBtn);
+                        container.appendChild(badge);
+                    });
+                }
+
+                // Inline add input
+                var addContainer = document.createElement('div');
+                addContainer.className = 'inline-add-container';
+
+                var input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'inline-add-input';
+                input.placeholder = '+ Tag...';
+                
+                var addBtn = document.createElement('button');
+                addBtn.className = 'inline-add-btn';
+                addBtn.textContent = '+';
+
+                function triggerAdd() {
+                    var val = input.value.trim();
+                    if (val) {
+                        addIndividualTag(movieId, val);
+                    }
+                }
+
+                input.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        triggerAdd();
+                    }
+                });
+                addBtn.addEventListener('click', triggerAdd);
+
+                addContainer.appendChild(input);
+                addContainer.appendChild(addBtn);
+                container.appendChild(addContainer);
+            }
+
+            function addIndividualTag(movieId, tag) {
+                var movie = loadedMovies.find(function (m) { return m.Id === movieId; });
+                if (!movie) return;
+
+                var newTags = movie.Tags ? [...movie.Tags] : [];
+                if (!newTags.includes(tag)) {
+                    newTags.push(tag);
+                    saveMovieTags(movieId, newTags);
+                }
+            }
+
+            function removeIndividualTag(movieId, tag) {
+                var movie = loadedMovies.find(function (m) { return m.Id === movieId; });
+                if (!movie) return;
+
+                var newTags = movie.Tags ? movie.Tags.filter(function (t) { return t !== tag; }) : [];
+                saveMovieTags(movieId, newTags);
+            }
+
+            function saveMovieTags(movieId, tags) {
+                var url = ApiClient.getUrl('JellyTag/Tags/Update');
+                
+                ApiClient.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: JSON.stringify({
+                        MovieId: movieId,
+                        Tags: tags
+                    }),
+                    contentType: 'application/json'
+                }).then(function () {
+                    // Update local state
+                    var movie = loadedMovies.find(function (m) { return m.Id === movieId; });
+                    if (movie) {
+                        movie.Tags = tags;
+                        var wrapper = currentPage.querySelector('#tags-wrapper-' + movieId);
+                        if (wrapper) {
+                            renderTags(wrapper, movieId, tags);
+                        }
+                    }
+                }).catch(function (err) {
+                    alert('Failed to update tags: ' + err.message);
+                });
+            }
+
+            function updateBulkPanelState() {
+                var page = currentPage;
+                var checkedCbs = page.querySelectorAll('.movie-checkbox:checked');
+                var bulkPanel = page.querySelector('#bulkPanel');
+                var countSpan = page.querySelector('#selectedCount');
+                var summarySpan = page.querySelector('#selectionSummary');
+
+                var selectedCount = checkedCbs.length;
+                if (countSpan) {
+                    countSpan.textContent = selectedCount;
+                }
+                if (summarySpan) {
+                    summarySpan.textContent = selectedCount + ' items selected';
+                }
+
+                if (bulkPanel) {
+                    if (selectedCount > 0) {
+                        bulkPanel.classList.add('active');
+                    } else {
+                        bulkPanel.classList.remove('active');
+                    }
+                }
+            }
+
+            function clearBulkSelections() {
+                var page = currentPage;
+                page.querySelector('#selectAllCheckbox').checked = false;
+                var checkboxes = page.querySelectorAll('.movie-checkbox');
+                checkboxes.forEach(function (cb) {
+                    cb.checked = false;
+                });
+                page.querySelector('#inputBulkTags').value = '';
+                updateBulkPanelState();
+            }
+
+            function applyBulkAction() {
+                var page = currentPage;
+                var checkedCbs = page.querySelectorAll('.movie-checkbox:checked');
+                if (checkedCbs.length === 0) return;
+
+                var action = page.querySelector('#bulkActionType').value;
+                var tagsString = page.querySelector('#inputBulkTags').value;
+                
+                var tags = tagsString.split(',')
+                                     .map(function (t) { return t.trim(); })
+                                     .filter(function (t) { return t.length > 0; });
+
+                 if (tags.length === 0 && (action === 'Add' || action === 'Set')) {
+                    alert('Please enter at least one tag.');
+                    return;
+                }
+
+                if (action === 'Set') {
+                    if (!confirm('Are you sure you want to overwrite all tags for the selected items? This will replace all their existing tags.')) {
+                        return;
+                    }
+                }
+
+                var movieIds = Array.from(checkedCbs).map(function (cb) {
+                    return cb.getAttribute('data-id');
+                });
+
+                Dashboard.showLoadingMsg();
+
+                var url = ApiClient.getUrl('JellyTag/Tags/BulkUpdate');
+                ApiClient.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: JSON.stringify({
+                        MovieIds: movieIds,
+                        Action: action === 'Add' ? 0 : (action === 'Remove' ? 1 : 2), // Maps to C# BulkAction Enum (0 = Add, 1 = Remove, 2 = Set)
+                        Tags: tags
+                    }),
+                    contentType: 'application/json'
+                }).then(function () {
+                    Dashboard.hideLoadingMsg();
+                    clearBulkSelections();
+                    loadMovies(); // Reload the list to show updated tags
+                }).catch(function (err) {
+                    Dashboard.hideLoadingMsg();
+                    alert('Failed to apply bulk update: ' + err.message);
+                });
+            }
+
+            function showHoverPreview(movieId, e) {
+                var previewContainer = document.getElementById('jellytag-hover-preview');
+                var img = document.getElementById('jellytag-preview-img');
+                if (!previewContainer || !img) return;
+
+                var url = ApiClient.getUrl('Items/' + movieId + '/Images/Primary', { maxWidth: 200 });
+                img.src = url;
+                previewContainer.style.display = 'block';
+                previewContainer.style.opacity = '1';
+                positionHoverPreview(e);
+            }
+
+            function positionHoverPreview(e) {
+                var previewContainer = document.getElementById('jellytag-hover-preview');
+                if (!previewContainer) return;
+
+                var x = e.pageX + 8;
+                var y = e.pageY + 8;
+
+                var screenWidth = window.innerWidth;
+                var screenHeight = window.innerHeight;
+                var popupWidth = 148;
+                var popupHeight = 210;
+
+                if (e.clientX + popupWidth + 12 > screenWidth) {
+                    x = e.pageX - popupWidth - 8;
+                }
+                if (e.clientY + popupHeight + 12 > screenHeight) {
+                    y = e.pageY - popupHeight - 8;
+                }
+
+                previewContainer.style.left = x + 'px';
+                previewContainer.style.top = y + 'px';
+            }
+
+            function hideHoverPreview() {
+                var previewContainer = document.getElementById('jellytag-hover-preview');
+                var img = document.getElementById('jellytag-preview-img');
+                if (previewContainer) {
+                    previewContainer.style.display = 'none';
+                    previewContainer.style.opacity = '0';
+                }
+                if (img) {
+                    img.src = '';
+                }
+            }
+
+            // Register lifecycle hook
+            document.querySelector('#JellyTagPage').addEventListener('pageshow', function () {
+                initPage(this);
+            });
+        })();
+    </script>
+</div>
