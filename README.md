@@ -63,13 +63,13 @@ This method allows you to install and update the plugin with a single click dire
 8. Go to **Dashboard > Plugins > Installed**, select **JellyTag**, and click the **Settings** button to open the dashboard.
 
 ### Method 2: Manual Installation
-1. Compile the plugin from source or download the compiled `JellyTag.dll` release.
+1. Download the pre-packaged [JellyTag.zip](https://github.com/samz3/JellyTag/raw/main/JellyTag.zip) directly from the repository.
 2. Navigate to your Jellyfin Server data directory:
    - **Windows (Service):** `C:\ProgramData\Jellyfin\Server\plugins\`
    - **Windows (Portable):** `[YourJellyfinFolder]\plugins\`
    - **Linux / Docker:** `/config/plugins/` (or your mapped volume path)
 3. Create a folder named `JellyTag` inside the `plugins` directory.
-4. Copy the `JellyTag.dll` and `thumb.png` files into the `JellyTag` directory:
+4. Extract the contents of `JellyTag.zip` (containing `JellyTag.dll` and `thumb.png`) directly into the `JellyTag` directory:
    ```text
    plugins/
    └── JellyTag/
