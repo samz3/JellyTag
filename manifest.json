@@ -4,13 +4,14 @@
     "guid": "e6d7b481-815d-4d3c-a1a3-c40c522964c3",
     "description": "Manage, filter, edit, and bulk update tags across your movies and series libraries.",
     "overview": "Adds a powerful tag manager to the administrator dashboard.",
-    "owner": "samz3",
+    "owner": "Sam Lopez",
     "category": "Metadata",
+    "imageUrl": "https://raw.githubusercontent.com/samz3/JellyTag/main/thumb.png",
     "versions": [
       {
-        "version": "1.0.0",
+        "version": "1.0.0.0",
         "changelog": "Initial release with compact horizontal layout, TV Show support, and floating bulk tag updates toolbar.",
-        "targetAbi": "10.10.6.0",
+        "targetAbi": "10.11.0.0",
         "sourceUrl": "https://github.com/samz3/JellyTag/releases/download/v1.0.0/JellyTag.dll",
         "checksum": "292E048F6A48E2C498A7D8AFAD056A7F5BE4BD74F4BAD3C0D1BB49BE2E86E71C"
       }
