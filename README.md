@@ -26,7 +26,11 @@ JellyTag is an administrative plugin for Jellyfin that allows you to manage meta
 ### 4. Active Plugin Details & Branding
 ![Plugin Details](./screenshots/screenshot4.png)
 
-### 5. Plugin Catalog View
+### 5. Accessing the Tagmanager dashboard
+To access the Tagmanager dashboard, open the installed **JellyTag** plugin details and click the **Settings** button.
+![Access Settings Button](./screenshots/settings_button.png)
+
+### 6. Plugin Catalog View
 ![Plugin Catalog](./screenshots/screenshot6.png)
 
 ---
@@ -56,6 +60,7 @@ This method allows you to install and update the plugin with a single click dire
 5. Select the **Catalog** tab. Scroll down or search for **JellyTag**.
 6. Select **JellyTag**, choose version `1.0.0.0`, and click **Install**.
 7. Restart your Jellyfin server.
+8. Go to **Dashboard > Plugins > Installed**, select **JellyTag**, and click the **Settings** button to open the dashboard.
 
 ### Method 2: Manual Installation
 1. Compile the plugin from source or download the compiled `JellyTag.dll` release.
@@ -72,6 +77,7 @@ This method allows you to install and update the plugin with a single click dire
        └── thumb.png
    ```
 5. Restart your Jellyfin server.
+6. Go to **Dashboard > Plugins > Installed**, select **JellyTag**, and click the **Settings** button to open the dashboard.
 
 ---
 
