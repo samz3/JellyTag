@@ -99,5 +99,5 @@ If you found this plugin helpful, feel free to buy me a coffee!
 ## Logo & Branding
 
 <p align="center">
-  <img src="./thumb.png" alt="JellyTag Logo" width="220" />
+  <img src="./thumb.png" alt="JellyTag Logo" width="500" />
 </p>
